@@ -13,6 +13,8 @@ import com.pedropathing.tuning.autotune.Inputs;
 import com.pedropathing.tuning.autotune.Procedure;
 import com.pedropathing.tuning.autotune.TuningOpMode;
 import com.pedropathing.utils.Angle;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -141,6 +143,11 @@ class TestsHold extends TuningOpMode<Boolean> {
     public Boolean runTuningOpMode() throws InterruptedException {
         Follower follower = followerFunction.apply(hardwareMap);
         follower.setPose(Pose.zero());
+        hardwareMap.get(DcMotorEx.class, "Front Left").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hardwareMap.get(DcMotorEx.class, "Front Right").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hardwareMap.get(DcMotorEx.class, "Back Left").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hardwareMap.get(DcMotorEx.class, "Back Right").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         Thread.sleep(1000);
         waitForStart();
         follower.setPose(Pose.zero());
