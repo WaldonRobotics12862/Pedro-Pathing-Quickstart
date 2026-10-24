@@ -21,6 +21,8 @@
             <goBILDA5202SeriesMotor name="Back Left" port="3" />-->
 
             <!--LAST YEARS ROBOT-->
+            <goBILDA5202SeriesMotor name="IntakeMotor" port="2" />
+            <goBILDA5202SeriesMotor name="LauncherMotor" port="3" />
             <goBILDA5202SeriesMotor name="Front Right" port="0" />
             <goBILDA5202SeriesMotor name="Back Right" port="1" />
 
