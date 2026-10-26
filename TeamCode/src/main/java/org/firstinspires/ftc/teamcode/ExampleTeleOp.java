@@ -29,6 +29,9 @@ public class ExampleTeleOp extends OpMode {
         intakeMotor = hardwareMap.get(DcMotor.class, "IntakeMotor");
         launcherMotor = hardwareMap.get(DcMotor.class, "LauncherMotor");
 
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        launcherMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -43,6 +46,13 @@ public class ExampleTeleOp extends OpMode {
     @Override
     public void loop() {
         Scheduler.execute();
+
+        telemetry.addData("LT (Intake Fwd)", gamepad1.left_trigger);
+        telemetry.addData("LB (Intake Rev)", gamepad1.left_bumper);
+        telemetry.addData("RT (Launcher)", gamepad1.right_trigger);
+        telemetry.addData("Intake Motor Power", intakeMotor.getPower());
+        telemetry.addData("Launcher Motor Power", launcherMotor.getPower());
+        telemetry.update();
     }
 
     private Command runDrive() {
