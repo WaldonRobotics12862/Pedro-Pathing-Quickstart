@@ -64,8 +64,15 @@ public class ExampleTeleOp extends OpMode {
     }
 
     private Command runIntake() {
-        // Logitech LT (Left Trigger): analog value 0.0 to 1.0
-        return infinite(() -> intakeMotor.setPower(gamepad1.left_trigger))
+        // Logitech LB (Left Bumper): reverse intake (-1.0)
+        // Logitech LT (Left Trigger): forward intake (0.0 to 1.0)
+        return infinite(() -> {
+            if (gamepad1.left_bumper) {
+                intakeMotor.setPower(-1.0);
+            } else {
+                intakeMotor.setPower(gamepad1.left_trigger);
+            }
+        })
                 .setEnd(endCondition -> intakeMotor.setPower(0))
                 .requiring(intakeMotor);
     }
