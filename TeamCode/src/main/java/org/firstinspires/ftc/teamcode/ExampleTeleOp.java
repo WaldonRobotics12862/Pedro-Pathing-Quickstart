@@ -49,6 +49,7 @@ public class ExampleTeleOp extends OpMode {
 
         telemetry.addData("LT (Intake Fwd)", gamepad1.left_trigger);
         telemetry.addData("LB (Intake Rev)", gamepad1.left_bumper);
+        telemetry.addData("X (Intake Rev)", gamepad1.x);
         telemetry.addData("RT (Launcher)", gamepad1.right_trigger);
         telemetry.addData("Intake Motor Power", intakeMotor.getPower());
         telemetry.addData("Launcher Motor Power", launcherMotor.getPower());
@@ -77,7 +78,7 @@ public class ExampleTeleOp extends OpMode {
         // Logitech LB (Left Bumper): reverse intake (-1.0)
         // Logitech LT (Left Trigger): forward intake (0.0 to 1.0)
         return infinite(() -> {
-            if (gamepad1.left_bumper) {
+            if (gamepad1.x) {
                 intakeMotor.setPower(-1.0);
             } else {
                 intakeMotor.setPower(gamepad1.left_trigger);
