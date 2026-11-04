@@ -6,6 +6,7 @@ import static com.pedropathing.ivy.commands.Commands.infinite;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -24,6 +25,7 @@ public class ExampleTeleOp extends OpMode {
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
+        SparkFunOTOS myOtos = hardwareMap.get(SparkFunOTOS.class, "otos");
 
         // Hardware mapping using the exact names configured in biobuzz.xml
         intakeMotor = hardwareMap.get(DcMotor.class, "IntakeMotor");
@@ -34,6 +36,8 @@ public class ExampleTeleOp extends OpMode {
 
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        myOtos.calibrateImu();
 
         // Schedule continuous TeleOp commands with Ivy
         schedule(
