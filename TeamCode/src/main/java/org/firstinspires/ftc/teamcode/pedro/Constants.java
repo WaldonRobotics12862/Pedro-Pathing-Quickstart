@@ -33,8 +33,8 @@ public class Constants {
         c.name.set("otos");
         //TODO: check on the linear scaler, we need to run a full test to make sure that the error here
         // is near zero.
-        c.linearScalar.set(1.0);
-        c.angularScalar.set(1.0);
+        c.linearScalar.set(1.016);
+        c.angularScalar.set(0.9976);
         c.offset.set(new Pose(-0.30637726070374016, 0.28234767162893704));
         c.linearUnit.set(DistanceUnit.INCH);
     });
