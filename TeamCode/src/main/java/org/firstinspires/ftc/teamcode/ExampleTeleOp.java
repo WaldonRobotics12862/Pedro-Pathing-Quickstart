@@ -132,6 +132,7 @@ public class ExampleTeleOp extends OpMode {
         // Button A toggles forward intake (1.0 / 0.0)
         // Button B toggles reverse intake (-1.0 / 0.0)
         return infinite(() -> {
+
             if (gamepad1.a && !prevA) {
                 intakePower = (intakePower > 0.0) ? 0.0 : 1.0;
             } else if (gamepad1.b && !prevB) {

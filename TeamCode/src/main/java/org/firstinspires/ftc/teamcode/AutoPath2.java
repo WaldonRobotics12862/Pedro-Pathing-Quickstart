@@ -30,10 +30,10 @@ public class AutoPath2 extends LinearOpMode {
     private final Pose point1Control1 = poseFactory.of(46.75, 22.75, 0);
     private final Pose point1Control2 = poseFactory.of(22.75, 22.75, 0);
     private final Pose point2Start = poseFactory.of(10, 15, 90);
-    private final Pose point2 = poseFactory.of(10, 13, 90);
-    private final Pose point3Start = poseFactory.of(10, 13, 90);
+    private final Pose point2 = poseFactory.of(9, 13, 90);
+    private final Pose point3Start = poseFactory.of(9, 13, 90);
     private final Pose point3 = poseFactory.of(62, 132, -90);
-    private final Pose point3Control1 = poseFactory.of(22.75, 58.75, 0);
+    private final Pose point3Control1 = poseFactory.of(34.75, 58.75, 0);
     private final Pose point3Control2 = poseFactory.of(22.75, 94.75, 0);
     private final Pose point4Start = poseFactory.of(62, 132, -90);
     private final Pose point4 = poseFactory.of(15, 122, 180);
