@@ -3,9 +3,12 @@ package org.firstinspires.ftc.teamcode;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.infinite;
 
+import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.follower.ManualDrive;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -24,6 +27,7 @@ public class ExampleTeleOp extends OpMode {
     private Follower follower;
     private DcMotor intakeMotor;
     private DcMotorEx launcherMotor;
+    private SparkFunOTOS otos;
 
     // Intake toggle state
     private double intakePower = 0.0;
@@ -46,6 +50,7 @@ public class ExampleTeleOp extends OpMode {
         // Hardware mapping using the exact names configured in biobuzz.xml
         intakeMotor = hardwareMap.get(DcMotor.class, "IntakeMotor");
         launcherMotor = hardwareMap.get(DcMotorEx.class, "LauncherMotor");
+        otos = hardwareMap.get(SparkFunOTOS.class, "otos");
 
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         launcherMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -85,12 +90,19 @@ public class ExampleTeleOp extends OpMode {
     }
 
     private Command runDrive() {
+        if (gamepad1.a){
+            otos.calibrateImu();
+        }
+
+        DrivePowers powers = ManualDrive.fieldCentric(
+                -gamepad1.left_stick_y,
+                gamepad1.left_stick_x,
+                gamepad1.right_stick_x,
+                follower.pose().heading()
+        );
+
         return infinite(() -> {
-            follower.manual(
-                    -gamepad1.left_stick_y,
-                    gamepad1.left_stick_x,
-                    gamepad1.right_stick_x
-            );
+            follower.manual(powers);
             follower.update();
         }).requiring(follower);
     }
@@ -101,24 +113,24 @@ public class ExampleTeleOp extends OpMode {
         // D-Pad Left: resets launcher speed to 950 RPM
         // D-Pad Right: stops the launcher motor (0 RPM)
         return infinite(() -> {
-            if (gamepad1.dpad_right && !prevDpadRight) {
+            if (gamepad2.dpad_right && !prevDpadRight) {
                 targetLauncherRpm = 0.0;
-            } else if (gamepad1.dpad_left && !prevDpadLeft) {
+            } else if (gamepad2.dpad_left && !prevDpadLeft) {
                 targetLauncherRpm = LAUNCHER_START_RPM;
-            } else if (gamepad1.dpad_up && !prevDpadUp) {
+            } else if (gamepad2.dpad_up && !prevDpadUp) {
                 if (targetLauncherRpm == 0.0) {
                     targetLauncherRpm = LAUNCHER_START_RPM;
                 } else {
                     targetLauncherRpm = Math.min(targetLauncherRpm + LAUNCHER_RPM_STEP, MAX_LAUNCHER_RPM);
                 }
-            } else if (gamepad1.dpad_down && !prevDpadDown) {
+            } else if (gamepad2.dpad_down && !prevDpadDown) {
                 targetLauncherRpm = Math.max(targetLauncherRpm - LAUNCHER_RPM_STEP, 0.0);
             }
 
-            prevDpadUp = gamepad1.dpad_up;
-            prevDpadDown = gamepad1.dpad_down;
-            prevDpadLeft = gamepad1.dpad_left;
-            prevDpadRight = gamepad1.dpad_right;
+            prevDpadUp = gamepad2.dpad_up;
+            prevDpadDown = gamepad2.dpad_down;
+            prevDpadLeft = gamepad2.dpad_left;
+            prevDpadRight = gamepad2.dpad_right;
 
             // Convert RPM to ticks per second: (RPM * 28 ticks/rev) / 60 sec/min
             double targetTicksPerSec = (targetLauncherRpm * LAUNCHER_TICKS_PER_REV) / 60.0;
@@ -133,14 +145,14 @@ public class ExampleTeleOp extends OpMode {
         // Button B toggles reverse intake (-1.0 / 0.0)
         return infinite(() -> {
 
-            if (gamepad1.a && !prevA) {
+            if (gamepad2.a && !prevA) {
                 intakePower = (intakePower > 0.0) ? 0.0 : 1.0;
-            } else if (gamepad1.b && !prevB) {
+            } else if (gamepad2.b && !prevB) {
                 intakePower = (intakePower < 0.0) ? 0.0 : -1.0;
             }
 
-            prevA = gamepad1.a;
-            prevB = gamepad1.b;
+            prevA = gamepad2.a;
+            prevB = gamepad2.b;
 
             intakeMotor.setPower(intakePower);
         })

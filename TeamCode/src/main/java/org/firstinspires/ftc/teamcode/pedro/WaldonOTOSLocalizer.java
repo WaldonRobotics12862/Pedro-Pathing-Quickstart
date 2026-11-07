@@ -56,14 +56,14 @@ public class WaldonOTOSLocalizer implements Localizer {
         SparkFunOTOS.Pose2D velocity2D = otos.getVelocity();
 
         Pose pose = new Pose(
-                pose2D.x*1.1,
-                pose2D.y*1.1,
+                pose2D.x*1.15,
+                pose2D.y*1.15,
                 pose2D.h - Math.PI / 2
         );
 
         Velocity velocity = new Velocity(
-                velocity2D.x*1.1,
-                velocity2D.y*1.1,
+                velocity2D.x*1.15,
+                velocity2D.y*1.15,
                 velocity2D.h
         );
 

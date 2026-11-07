@@ -34,7 +34,7 @@ public class Constants {
         c.name.set("otos");
         //TODO: check on the linear scaler, we need to run a full test to make sure that the error here
         // is near zero.
-        c.linearScalar.set(1.120);
+        c.linearScalar.set(1.036);
         c.angularScalar.set(0.9976);
         c.offset.set(new Pose(-1.4177457554133859, -0.21626630167322836));
         c.linearUnit.set(DistanceUnit.INCH);
@@ -53,7 +53,8 @@ public class Constants {
                 c.coast.set(Controller.proportionalFeedforward(0.011864689789196189));
                 c.brake.set(Controller.proportionalFeedforward(0.010084986320816761));
 
-                c.headingFeedback.set(Controller.proportional(4.323140177511518));
+                //c.headingFeedback.set(Controller.proportional(4.323140177511518));
+                c.headingFeedback.set(Controller.proportional(0.4323140177511518));
                 c.headingBrakeCoefficients.set(Vector2D.cartesian(0.319456471637141, -0.0877505675429819));
 
                 c.linearBrakeCoefficients.set(Matrix.diag(0.0760908006931384, 0.04185195328229819));
