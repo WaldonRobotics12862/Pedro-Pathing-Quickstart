@@ -180,9 +180,9 @@ Return composable `Command` objects for the Ivy scheduler:
 |---|---|
 | **A** (toggle) | Intake forward ON / OFF |
 | **B** (toggle) | Intake reverse ON / OFF |
-| **D-Pad Up** | Launcher: start at 950 RPM or +50 RPM |
+| **D-Pad Up** | Launcher: start at 1450 RPM or +50 RPM |
 | **D-Pad Down** | Launcher: −50 RPM |
-| **D-Pad Left** | Launcher: reset to 950 RPM |
+| **D-Pad Left** | Launcher: reset to 1450 RPM |
 | **D-Pad Right** | Launcher: stop (0 RPM) |
 | **Left Bumper** (hold) | Feed: open gate + run car wash |
 
@@ -218,7 +218,7 @@ Configured in `pedro/Constants.java`:
 | Constant | Value | Notes |
 |---|---|---|
 | `TICKS_PER_REV` | `28.0 × 3.7 = 103.6` | goBILDA 5202 encoder × 3.7:1 gearbox |
-| `START_RPM` | `950` | Default starting RPM |
+| `START_RPM` | `1450` | Default starting RPM |
 | `RPM_STEP` | `50` | Increment per D-pad press |
 | `MAX_RPM` | `6000` | Safety cap |
 

@@ -21,7 +21,7 @@ public class LauncherSubsystem {
     public static final double TICKS_PER_REV = 28.0 * 3.7;
 
     /** Default RPM when first starting the launcher. */
-    public static final double START_RPM = 950.0;
+    public static final double START_RPM = 1450.0;
 
     /** RPM adjustment step per button press. */
     public static final double RPM_STEP = 50.0;
@@ -121,9 +121,9 @@ public class LauncherSubsystem {
      * Teleop command for D-pad RPM control.
      *
      * <ul>
-     *   <li>D-Pad Up:    start at 950 RPM when stopped; +50 RPM when running</li>
+     *   <li>D-Pad Up:    start at 1450 RPM when stopped; +50 RPM when running</li>
      *   <li>D-Pad Down:  −50 RPM</li>
-     *   <li>D-Pad Left:  reset to 950 RPM</li>
+     *   <li>D-Pad Left:  reset to 1450 RPM</li>
      *   <li>D-Pad Right: stop (0 RPM)</li>
      * </ul>
      *
