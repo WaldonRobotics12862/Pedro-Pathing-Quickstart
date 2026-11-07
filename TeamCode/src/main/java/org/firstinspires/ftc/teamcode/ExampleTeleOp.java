@@ -99,18 +99,17 @@ public class ExampleTeleOp extends OpMode {
     }
 
     private Command runDrive() {
-        if (gamepad1.a){
-            otos.calibrateImu();
-        }
-
-        DrivePowers powers = ManualDrive.fieldCentric(
-                -gamepad1.left_stick_y,
-                gamepad1.left_stick_x,
-                gamepad1.right_stick_x,
-                follower.pose().heading()
-        );
-
         return infinite(() -> {
+            if(gamepad1.a){
+                otos.calibrateImu();
+            }
+
+            DrivePowers powers = ManualDrive.fieldCentric(
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x,
+                    -gamepad1.right_stick_x,
+                    follower.pose().heading()
+            );
             follower.manual(powers);
             follower.update();
         }).requiring(follower);
@@ -139,8 +138,8 @@ public class ExampleTeleOp extends OpMode {
             if (gamepad2.left_bumper){
                 //lower the servo gate and run the car wash
                 launchGate.setPosition(0.0);
-                carWashLeft.setPower(1.0);
-                carWwashRight.setPower(-1.0);
+                carWashLeft.setPower(-1.0);
+                carWwashRight.setPower(1.0);
             } else {
                 //raise the servo gate and stop the car wash
                 launchGate.setPosition(1.0);
