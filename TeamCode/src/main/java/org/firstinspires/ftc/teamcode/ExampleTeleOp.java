@@ -9,82 +9,48 @@ import com.pedropathing.follower.ManualDrive;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.FeederSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
 
 @TeleOp(name = "Example TeleOp")
 public class ExampleTeleOp extends OpMode {
 
-    private static final double LAUNCHER_TICKS_PER_REV = 28.0*3.7;
-    private static final double LAUNCHER_START_RPM = 950.0;
-    private static final double LAUNCHER_RPM_STEP = 50.0;
-    private static final double MAX_LAUNCHER_RPM = 6000.0;
-
     private Follower follower;
-    private DcMotor intakeMotor;
-    private DcMotorEx launcherMotor;
-    private CRServo carWashLeft;
-    private CRServo carWwashRight;
-    private Servo launchGate;
     private SparkFunOTOS otos;
 
-    // Intake toggle state
-    private double intakePower = 0.0;
-    private boolean prevA = false;
-    private boolean prevB = false;
-
-    // Launcher RPM state
-    private double targetLauncherRpm = 0.0;
-    private boolean prevDpadUp = false;
-    private boolean prevDpadDown = false;
-    private boolean prevDpadLeft = false;
-    private boolean prevDpadRight = false;
+    // Subsystems
+    private IntakeSubsystem intake;
+    private FeederSubsystem feeder;
+    private LauncherSubsystem launcher;
 
     @Override
     public void init() {
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
-
-        // Hardware mapping using the exact names configured in biobuzz.xml
-        intakeMotor = hardwareMap.get(DcMotor.class, "IntakeMotor");
-        launcherMotor = hardwareMap.get(DcMotorEx.class, "LauncherMotor");
         otos = hardwareMap.get(SparkFunOTOS.class, "otos");
-        carWwashRight = hardwareMap.get(CRServo.class, "Car Wash Right");
-        carWashLeft = hardwareMap.get(CRServo.class, "Car Wash Left");
-        launchGate = hardwareMap.get(Servo.class, "Launch Gate");
 
-
-        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        launcherMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        launcherMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        intakePower = 0.0;
-        prevA = false;
-        prevB = false;
-
-        targetLauncherRpm = 0.0;
-        prevDpadUp = false;
-        prevDpadDown = false;
-        prevDpadLeft = false;
-        prevDpadRight = false;
+        // Initialise subsystems
+        intake = new IntakeSubsystem(hardwareMap);
+        feeder = new FeederSubsystem(hardwareMap);
+        launcher = new LauncherSubsystem(hardwareMap);
 
         // Schedule continuous TeleOp commands with Ivy
         schedule(
                 runDrive(),
-                runIntake(),
-                runLaunch()
+                intake.teleopToggle(() -> gamepad2.a, () -> gamepad2.b),
+                launcher.teleopDpadControl(
+                        () -> gamepad2.dpad_up,
+                        () -> gamepad2.dpad_down,
+                        () -> gamepad2.dpad_left,
+                        () -> gamepad2.dpad_right
+                ),
+                feeder.teleopHoldToFeed(() -> gamepad2.left_bumper)
         );
     }
 
@@ -92,18 +58,16 @@ public class ExampleTeleOp extends OpMode {
     public void loop() {
         Scheduler.execute();
 
-        double actualTicksPerSec = launcherMotor.getVelocity();
-        double actualRpm = (actualTicksPerSec * 60.0) / LAUNCHER_TICKS_PER_REV;
-
-        telemetry.addData("Intake Motor Power", intakeMotor.getPower());
-        telemetry.addData("Launcher Target RPM", "%.0f RPM", targetLauncherRpm);
-        telemetry.addData("Launcher Actual RPM", "%.1f RPM (%.1f ticks/s)", actualRpm, actualTicksPerSec);
+        telemetry.addData("Intake Motor Power", intake.getPower());
+        telemetry.addData("Launcher Target RPM", "%.0f RPM", launcher.getTargetRpm());
+        telemetry.addData("Launcher Actual RPM", "%.1f RPM (%.1f ticks/s)",
+                launcher.getActualRpm(), launcher.getActualTicksPerSec());
         telemetry.update();
     }
 
     private Command runDrive() {
         return infinite(() -> {
-            if(gamepad1.a){
+            if (gamepad1.a) {
                 otos.calibrateImu();
             }
 
@@ -116,70 +80,5 @@ public class ExampleTeleOp extends OpMode {
             follower.manual(powers);
             follower.update();
         }).requiring(follower);
-    }
-
-    private Command runLaunch() {
-        // D-Pad Up: starts at 950 RPM when stopped; subsequent presses increment by +50 RPM
-        // D-Pad Down: decrements by -50 RPM on each press
-        // D-Pad Left: resets launcher speed to 950 RPM
-        // D-Pad Right: stops the launcher motor (0 RPM)
-        return infinite(() -> {
-            if (gamepad2.dpad_right && !prevDpadRight) {
-                targetLauncherRpm = 0.0;
-            } else if (gamepad2.dpad_left && !prevDpadLeft) {
-                targetLauncherRpm = LAUNCHER_START_RPM;
-            } else if (gamepad2.dpad_up && !prevDpadUp) {
-                if (targetLauncherRpm == 0.0) {
-                    targetLauncherRpm = LAUNCHER_START_RPM;
-                } else {
-                    targetLauncherRpm = Math.min(targetLauncherRpm + LAUNCHER_RPM_STEP, MAX_LAUNCHER_RPM);
-                }
-            } else if (gamepad2.dpad_down && !prevDpadDown) {
-                targetLauncherRpm = Math.max(targetLauncherRpm - LAUNCHER_RPM_STEP, 0.0);
-            }
-
-            if (gamepad2.left_bumper){
-                //lower the servo gate and run the car wash
-                launchGate.setPosition(0.0);
-                carWashLeft.setPower(-1.0);
-                carWwashRight.setPower(1.0);
-            } else {
-                //raise the servo gate and stop the car wash
-                launchGate.setPosition(1.0);
-                carWashLeft.setPower(0.0);
-                carWwashRight.setPower(-0.0);
-            }
-
-            prevDpadUp = gamepad2.dpad_up;
-            prevDpadDown = gamepad2.dpad_down;
-            prevDpadLeft = gamepad2.dpad_left;
-            prevDpadRight = gamepad2.dpad_right;
-
-            // Convert RPM to ticks per second: (RPM * 28 ticks/rev) / 60 sec/min
-            double targetTicksPerSec = (targetLauncherRpm * LAUNCHER_TICKS_PER_REV) / 60.0;
-            launcherMotor.setVelocity(targetTicksPerSec);
-        })
-                .setEnd(endCondition -> launcherMotor.setVelocity(0))
-                .requiring(launcherMotor);
-    }
-
-    private Command runIntake() {
-        // Button A toggles forward intake (1.0 / 0.0)
-        // Button B toggles reverse intake (-1.0 / 0.0)
-        return infinite(() -> {
-
-            if (gamepad2.a && !prevA) {
-                intakePower = (intakePower > 0.0) ? 0.0 : 1.0;
-            } else if (gamepad2.b && !prevB) {
-                intakePower = (intakePower < 0.0) ? 0.0 : -1.0;
-            }
-
-            prevA = gamepad2.a;
-            prevB = gamepad2.b;
-
-            intakeMotor.setPower(intakePower);
-        })
-                .setEnd(endCondition -> intakeMotor.setPower(0))
-                .requiring(intakeMotor);
     }
 }
