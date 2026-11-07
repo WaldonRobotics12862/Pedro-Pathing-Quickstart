@@ -10,6 +10,7 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -21,7 +22,7 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 @TeleOp(name = "Example TeleOp")
 public class ExampleTeleOp extends OpMode {
 
-    private static final double LAUNCHER_TICKS_PER_REV = 28.0;
+    private static final double LAUNCHER_TICKS_PER_REV = 28.0*3.7;
     private static final double LAUNCHER_START_RPM = 950.0;
     private static final double LAUNCHER_RPM_STEP = 50.0;
     private static final double MAX_LAUNCHER_RPM = 6000.0;
@@ -63,6 +64,8 @@ public class ExampleTeleOp extends OpMode {
 
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         launcherMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        launcherMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
