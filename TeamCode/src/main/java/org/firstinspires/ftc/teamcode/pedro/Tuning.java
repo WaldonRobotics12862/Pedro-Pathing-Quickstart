@@ -28,7 +28,7 @@ public class Tuning {
     @Tuner
     public static Procedure foresightTuner() {
         return new ForesightTuner(
-                (hardwareMap) -> new OTOSLocalizer(hardwareMap, Constants.localizerConfig),
+                (hardwareMap) -> new WaldonOTOSLocalizer(hardwareMap, Constants.localizerConfig),
                 (hardwareMap) -> new Mecanum(hardwareMap, Constants.drivetrainConfig)
         );
     }
@@ -36,7 +36,7 @@ public class Tuning {
     public static Procedure tests() {
         return new Tests(
                 hardwareMap -> new Mecanum(hardwareMap, Constants.drivetrainConfig),
-                (hardwareMap -> new OTOSLocalizer(hardwareMap, Constants.localizerConfig)),
+                (hardwareMap -> new WaldonOTOSLocalizer(hardwareMap, Constants.localizerConfig)),
                 () -> new Foresight(Constants.foresightConfig)
         );
     }

@@ -11,6 +11,7 @@ import com.pedropathing.revhub.drivetrains.Mecanum;
 import com.pedropathing.revhub.drivetrains.MecanumConfig;
 import com.pedropathing.revhub.localizers.OTOSConfig;
 import com.pedropathing.revhub.localizers.OTOSLocalizer;
+import org.firstinspires.ftc.teamcode.pedro.WaldonOTOSLocalizer;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -72,7 +73,7 @@ public class Constants {
     );
     public static Follower create(HardwareMap h) {
         return new Follower(
-                new OTOSLocalizer(h, localizerConfig),
+                new WaldonOTOSLocalizer(h, localizerConfig),
                 new Mecanum(h, drivetrainConfig),
                 new Foresight(foresightConfig)
         );
