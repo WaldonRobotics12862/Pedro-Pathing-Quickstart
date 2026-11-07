@@ -9,6 +9,8 @@ import com.pedropathing.follower.ManualDrive;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -27,6 +29,9 @@ public class ExampleTeleOp extends OpMode {
     private Follower follower;
     private DcMotor intakeMotor;
     private DcMotorEx launcherMotor;
+    private CRServo carWashLeft;
+    private CRServo carWwashRight;
+    private Servo launchGate;
     private SparkFunOTOS otos;
 
     // Intake toggle state
@@ -51,6 +56,10 @@ public class ExampleTeleOp extends OpMode {
         intakeMotor = hardwareMap.get(DcMotor.class, "IntakeMotor");
         launcherMotor = hardwareMap.get(DcMotorEx.class, "LauncherMotor");
         otos = hardwareMap.get(SparkFunOTOS.class, "otos");
+        carWwashRight = hardwareMap.get(CRServo.class, "Car Wash Right");
+        carWashLeft = hardwareMap.get(CRServo.class, "Car Wash Left");
+        launchGate = hardwareMap.get(Servo.class, "Launch Gate");
+
 
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         launcherMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -125,6 +134,18 @@ public class ExampleTeleOp extends OpMode {
                 }
             } else if (gamepad2.dpad_down && !prevDpadDown) {
                 targetLauncherRpm = Math.max(targetLauncherRpm - LAUNCHER_RPM_STEP, 0.0);
+            }
+
+            if (gamepad2.left_bumper){
+                //lower the servo gate and run the car wash
+                launchGate.setPosition(0.0);
+                carWashLeft.setPower(1.0);
+                carWwashRight.setPower(-1.0);
+            } else {
+                //raise the servo gate and stop the car wash
+                launchGate.setPosition(1.0);
+                carWashLeft.setPower(0.0);
+                carWwashRight.setPower(-0.0);
             }
 
             prevDpadUp = gamepad2.dpad_up;
