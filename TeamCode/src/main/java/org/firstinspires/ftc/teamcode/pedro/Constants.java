@@ -12,7 +12,6 @@ import com.pedropathing.revhub.drivetrains.MecanumConfig;
 import com.pedropathing.revhub.localizers.OTOSConfig;
 import com.pedropathing.revhub.localizers.OTOSLocalizer;
 import org.firstinspires.ftc.teamcode.pedro.WaldonOTOSLocalizer;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -34,9 +33,9 @@ public class Constants {
         c.name.set("otos");
         //TODO: check on the linear scaler, we need to run a full test to make sure that the error here
         // is near zero.
-        c.linearScalar.set(1.036);
+        c.linearScalar.set(1.03); //1.036
         c.angularScalar.set(0.9976);
-        c.offset.set(new Pose(-1.4177457554133859, -0.21626630167322836));
+        c.offset.set(new Pose(0.31496,1.363));
         c.linearUnit.set(DistanceUnit.INCH);
     });
 
@@ -80,7 +79,7 @@ public class Constants {
 //                c.brake.set(Controller.proportionalFeedforward(0.010969456855655244));
 //
 //                //TODO: suggestion from Discord is that the heading Feedback is too large and is affecting
-//                // the brake coefficients. So maybe reducing the heading a little bit may allow us to icrease
+//                // the brake coefficients. So maybe reducing the heading a little bit may allow us to increase
 //                // the brake back a little bit and get closer to the actual follower
 //                c.headingFeedback.set(Controller.proportional(5.054114053918472));
 ////                c.headingBrakeCoefficients.set(Vector2D.cartesian(0.46629179474781246, -0.14460631536791002));
@@ -101,7 +100,7 @@ public class Constants {
 
     public static Follower create(HardwareMap h) {
         return new Follower(
-                new WaldonOTOSLocalizer(h, localizerConfig),
+                new OTOSLocalizer(h, localizerConfig),
                 new Mecanum(h, drivetrainConfig),
                 new Foresight(foresightConfig)
         );
