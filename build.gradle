@@ -22,6 +22,8 @@ plugins {
 allprojects {
     repositories {
         mavenCentral()
+        maven { url 'https://repo.dairy.foundation/releases/' }
+        maven { url 'https://maven.brott.dev/' }
         google()
     }
 }

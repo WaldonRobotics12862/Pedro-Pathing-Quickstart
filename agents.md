@@ -265,6 +265,7 @@ Configured in `pedro/Constants.java`:
 | `com.pedropathing.ivy:core` | 1.1.1 | Ivy command framework (Command, Scheduler, Groups) |
 | `com.pedropathing.ivy:pedro` | 1.1.1 | Ivy-Pedro integration (PedroCommands) |
 | `com.pedropathing:tuning` | 1.0.3 | Auto-tuning procedures |
+| `com.acmerobotics.dashboard:dashboard` | 0.4.16 | FTC Dashboard & AdvantageScope live telemetry streaming |
 
 ---
 

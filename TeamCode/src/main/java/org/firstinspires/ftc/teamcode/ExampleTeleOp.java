@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.infinite;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.ManualDrive;
@@ -32,6 +34,9 @@ public class ExampleTeleOp extends OpMode {
     public void init() {
         Scheduler.reset();
 
+        // Forward all telemetry to FTC Dashboard and AdvantageScope
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         follower = Constants.create(hardwareMap);
         otos = hardwareMap.get(SparkFunOTOS.class, "otos");
 
@@ -58,10 +63,19 @@ public class ExampleTeleOp extends OpMode {
     public void loop() {
         Scheduler.execute();
 
-        telemetry.addData("Intake Motor Power", intake.getPower());
-        telemetry.addData("Launcher Target RPM", "%.0f RPM", launcher.getTargetRpm());
-        telemetry.addData("Launcher Actual RPM", "%.1f RPM (%.1f ticks/s)",
-                launcher.getActualRpm(), launcher.getActualTicksPerSec());
+        // Subsystem telemetry (numeric values for AdvantageScope line graph plotting)
+        telemetry.addData("Intake/Power", intake.getPower());
+        telemetry.addData("Launcher/Target RPM", launcher.getTargetRpm());
+        telemetry.addData("Launcher/Actual RPM", launcher.getActualRpm());
+        telemetry.addData("Launcher/Actual TicksPerSec", launcher.getActualTicksPerSec());
+
+        // Robot pose telemetry (for AdvantageScope 2D/3D field visualization)
+        if (follower != null && follower.pose() != null) {
+            telemetry.addData("Robot/X", follower.pose().x());
+            telemetry.addData("Robot/Y", follower.pose().y());
+            telemetry.addData("Robot/Heading Deg", Math.toDegrees(follower.pose().heading()));
+        }
+
         telemetry.update();
     }
 
