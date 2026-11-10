@@ -79,7 +79,8 @@ public class FeederSubsystem {
     public Command feedCommand() {
         return new CommandBuilder()
                 .setStart(this::engage)
-                .setEnd(endCondition -> disengage())
+                //.setEnd(endCondition -> disengage())
+                .setDone(() -> true)
                 .requiring(carWashLeft, carWashRight, launchGate);
     }
 

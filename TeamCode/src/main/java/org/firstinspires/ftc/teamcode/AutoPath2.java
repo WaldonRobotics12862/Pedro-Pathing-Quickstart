@@ -23,6 +23,7 @@ public class AutoPath2 extends LinearOpMode {
 
     private Follower follower;
 
+
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(56.5, 9, 90);

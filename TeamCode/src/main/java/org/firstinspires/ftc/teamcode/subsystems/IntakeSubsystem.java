@@ -51,7 +51,8 @@ public class IntakeSubsystem {
     public Command runForward() {
         return new CommandBuilder()
                 .setStart(() -> setPower(1.0))
-                .setEnd(endCondition -> stop())
+                //.setEnd(endCondition -> stop())
+                .setDone(() -> true)
                 .requiring(intakeMotor);
     }
 
@@ -62,6 +63,7 @@ public class IntakeSubsystem {
         return new CommandBuilder()
                 .setStart(() -> setPower(-1.0))
                 .setEnd(endCondition -> stop())
+                .setDone(() -> true)
                 .requiring(intakeMotor);
     }
 
