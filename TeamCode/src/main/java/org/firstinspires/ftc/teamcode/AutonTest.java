@@ -25,6 +25,7 @@ import static org.firstinspires.ftc.teamcode.pedro.Constants.localizerConfig;
 import com.pedropathing.revhub.drivetrains.Mecanum;
 import com.pedropathing.revhub.localizers.OTOSLocalizer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -33,6 +34,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+@Disabled
 @Autonomous (name = "Mr. Cox", group = "Autonomous")
 public class AutonTest extends LinearOpMode {
 

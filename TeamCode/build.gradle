@@ -23,7 +23,13 @@ android {
         jniLibs.useLegacyPackaging true
     }
 }
+repositories {
+    maven {
+        url = "https://repo.dairy.foundation/releases"
+    }
+}
 
 dependencies {
     implementation project(':FtcRobotController')
+    implementation("page.j5155.AdvantageScope:lite:v26.0.0")
 }

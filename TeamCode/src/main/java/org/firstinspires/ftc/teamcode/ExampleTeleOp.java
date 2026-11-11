@@ -19,6 +19,11 @@ import org.firstinspires.ftc.teamcode.subsystems.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+
+
+
 @TeleOp(name = "Example TeleOp")
 public class ExampleTeleOp extends OpMode {
 
@@ -30,8 +35,16 @@ public class ExampleTeleOp extends OpMode {
     private FeederSubsystem feeder;
     private LauncherSubsystem launcher;
 
+    //Logger
+    private FtcDashboard dashboard;
+    private TelemetryPacket packet;
+
+
     @Override
     public void init() {
+
+        dashboard = FtcDashboard.getInstance();
+        packet = new TelemetryPacket();
         Scheduler.reset();
 
         // Forward all telemetry to FTC Dashboard and AdvantageScope
@@ -61,13 +74,23 @@ public class ExampleTeleOp extends OpMode {
 
     @Override
     public void loop() {
+        packet = new TelemetryPacket();
         Scheduler.execute();
+
+        // Add your custom robot data
+        packet.put("Intake/Power", intake.getPower());
+        packet.put("Launcher/Target RPM", launcher.getTargetRpm());
+        packet.put("Launcher/Actual RPM", launcher.getActualRpm());
+        packet.put("Launcher/Actual TicksPerSec", launcher.getActualTicksPerSec());
 
         // Subsystem telemetry (numeric values for AdvantageScope line graph plotting)
         telemetry.addData("Intake/Power", intake.getPower());
         telemetry.addData("Launcher/Target RPM", launcher.getTargetRpm());
         telemetry.addData("Launcher/Actual RPM", launcher.getActualRpm());
         telemetry.addData("Launcher/Actual TicksPerSec", launcher.getActualTicksPerSec());
+
+        dashboard.sendTelemetryPacket(packet);
+
 
         // Robot pose telemetry (for AdvantageScope 2D/3D field visualization)
         if (follower != null && follower.pose() != null) {

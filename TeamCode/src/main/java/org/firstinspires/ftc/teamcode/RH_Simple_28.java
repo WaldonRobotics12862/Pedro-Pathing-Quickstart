@@ -11,17 +11,25 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.*;
+import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.FeederSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
 
 @Autonomous(name = "RH_Simple_28", group = "Autonomous")
 public class RH_Simple_28 extends LinearOpMode {
 
     private Follower follower;
+    // Subsystems
+    private IntakeSubsystem intake;
+    private FeederSubsystem feeder;
+    private LauncherSubsystem launcher;
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
@@ -31,8 +39,26 @@ public class RH_Simple_28 extends LinearOpMode {
 
     // Autonomous routine
     public Command autoRoutine() {
-        return sequential(
-                follow(follower, path1())
+        // Initialise subsystems
+        intake = new IntakeSubsystem(hardwareMap);
+        feeder = new FeederSubsystem(hardwareMap);
+        launcher = new LauncherSubsystem(hardwareMap);
+
+        return parallel(
+                launcher.runAtRpm(1200),
+                sequential(
+                        waitMs(500),
+                        parallel(
+                                feeder.feedCommand(),
+                                intake.runForward()
+                        ),
+                        waitMs(2000),
+                        parallel(
+                                intake.stopCommand(),
+                                feeder.stopCommand()
+                        ),
+                    follow(follower, path1())
+                )
         );
     }
 

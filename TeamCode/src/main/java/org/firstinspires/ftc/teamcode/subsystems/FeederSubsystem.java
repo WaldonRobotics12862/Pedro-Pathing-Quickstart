@@ -21,8 +21,8 @@ public class FeederSubsystem {
     private final Servo launchGate;
 
     /** Gate positions */
-    public static final double GATE_OPEN = 0.0;
-    public static final double GATE_CLOSED = 1.0;
+    public static final double GATE_OPEN = 1.0;
+    public static final double GATE_CLOSED = 0.8;
 
     public FeederSubsystem(HardwareMap hardwareMap) {
         carWashLeft = hardwareMap.get(CRServo.class, "Car Wash Left");

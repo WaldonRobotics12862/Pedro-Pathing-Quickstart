@@ -21,7 +21,7 @@ public class LauncherSubsystem {
     public static final double TICKS_PER_REV = 28.0 * 3.7;
 
     /** Default RPM when first starting the launcher. */
-    public static final double START_RPM = 1000; //1450
+    public static final double START_RPM = 1350; //1450
 
     /** RPM adjustment step per button press. */
     public static final double RPM_STEP = 50.0;
@@ -36,7 +36,7 @@ public class LauncherSubsystem {
         launcherMotor = hardwareMap.get(DcMotorEx.class, "LauncherMotor");
         launcherMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launcherMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        //launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        launcherMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     // ── Low-level control ────────────────────────────────────────────────
