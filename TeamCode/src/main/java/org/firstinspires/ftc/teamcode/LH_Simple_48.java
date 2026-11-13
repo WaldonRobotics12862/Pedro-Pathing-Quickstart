@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
-
 import static com.pedropathing.api.Paths.*;
-        import com.pedropathing.api.Paths;
+import com.pedropathing.api.Paths;
 
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
@@ -11,33 +10,59 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.*;
-        import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.FeederSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
 
 @Autonomous(name = "LH_Simple_48", group = "Autonomous")
 public class LH_Simple_48 extends LinearOpMode {
 
     private Follower follower;
 
+    private IntakeSubsystem intake;
+    private FeederSubsystem feeder;
+    private LauncherSubsystem launcher;
+
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = poseFactory.of(62, 132, -90);
-    private final Pose path1 = poseFactory.of(61.5844, 80.3286, -90);
-    private final Pose point2 = poseFactory.of(62, 132, -90.4608);
-    private final Pose point3Start = poseFactory.of(62, 132, -90);
-    private final Pose point3 = poseFactory.of(11.0026, 120.8318, 180);
+    private final Pose start = poseFactory.of(61, 130, -90);
+    private final Pose path1 = poseFactory.of(61, 80.3286, -90);
+    private final Pose point2 = poseFactory.of(61, 120, -89.352);
+    private final Pose point3Start = poseFactory.of(61, 120, -90);
+    private final Pose point3 = poseFactory.of(19.0026, 110.8318, 180);
     private final Pose point3Control1 = poseFactory.of(43.0023, 108.8855, 0);
 
     // Autonomous routine
     public Command autoRoutine() {
-        return sequential(
-                follow(follower, path1()),
-                follow(follower, path2()),
-                follow(follower, path3())
+
+        intake = new IntakeSubsystem(hardwareMap);
+        feeder = new FeederSubsystem(hardwareMap);
+        launcher = new LauncherSubsystem(hardwareMap);
+
+        return parallel(
+                launcher.runAtRpm(1200),
+                sequential(
+                        follow(follower, path1()),
+                        waitMs(20000),
+                        follow(follower, path2()),
+                        parallel(
+                                feeder.feedCommand(),
+                                intake.runForward()
+                        ),
+                        waitMs(2000),
+                        parallel(
+                                intake.stopCommand(),
+                                feeder.stopCommand()
+                        ),
+                        follow(follower, path3())
+                )
         );
     }
 
@@ -77,6 +102,6 @@ public class LH_Simple_48 extends LinearOpMode {
     }
 
     public Path path3() {
-        return Paths.curve(point3Start, point3Control1, point3).linear(point3Start, point3);
+        return Paths.curve(point3Start, point3Control1, point3).tangent();
     }
 }

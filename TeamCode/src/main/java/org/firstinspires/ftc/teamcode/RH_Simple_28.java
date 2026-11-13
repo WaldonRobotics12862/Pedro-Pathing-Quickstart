@@ -11,8 +11,8 @@ import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.*;
-import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
 public class RH_Simple_28 extends LinearOpMode {
 
     private Follower follower;
-    // Subsystems
+
     private IntakeSubsystem intake;
     private FeederSubsystem feeder;
     private LauncherSubsystem launcher;
@@ -34,8 +34,10 @@ public class RH_Simple_28 extends LinearOpMode {
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(56.6, 9, 90);
-    private final Pose path1 = poseFactory.of(13.3691, 92.3521, 90);
-    private final Pose path1Control1 = poseFactory.of(6.0623, 28.8216, 0);
+    private final Pose path1 = poseFactory.of(56.6, 24, 90);
+    private final Pose point2Start = poseFactory.of(56.6, 24, 90);
+    private final Pose point2 = poseFactory.of(20, 92, 90);
+    private final Pose point2Control1 = poseFactory.of(21.1337, 40.7019, 0);
 
     // Autonomous routine
     public Command autoRoutine() {
@@ -47,6 +49,7 @@ public class RH_Simple_28 extends LinearOpMode {
         return parallel(
                 launcher.runAtRpm(1200),
                 sequential(
+                        follow(follower, path1()),
                         waitMs(500),
                         parallel(
                                 feeder.feedCommand(),
@@ -57,7 +60,7 @@ public class RH_Simple_28 extends LinearOpMode {
                                 intake.stopCommand(),
                                 feeder.stopCommand()
                         ),
-                    follow(follower, path1())
+                        follow(follower, path2())
                 )
         );
     }
@@ -90,6 +93,10 @@ public class RH_Simple_28 extends LinearOpMode {
     }
 
     public Path path1() {
-        return Paths.curve(start, path1Control1, path1).linear(start, path1);
+        return Paths.line(start, path1).linear(start, path1);
+    }
+
+    public Path path2() {
+        return Paths.curve(point2Start, point2Control1, point2).tangent();
     }
 }
