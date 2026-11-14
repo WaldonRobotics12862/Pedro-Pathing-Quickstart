@@ -15,6 +15,7 @@
 
         <LynxModule name="Control Hub" port="173">
             <ContinuousRotationServo name="Car Wash Right" port="0" />
+            <Servo name="Stinger" port="2" />
 
             <goBILDA5202SeriesMotor name="Front Right" port="0" />
             <goBILDA5202SeriesMotor name="Back Right" port="1" />

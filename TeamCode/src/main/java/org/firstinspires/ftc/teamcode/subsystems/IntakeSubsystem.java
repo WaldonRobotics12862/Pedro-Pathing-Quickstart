@@ -5,6 +5,7 @@ import com.pedropathing.ivy.CommandBuilder;
 import com.pedropathing.ivy.commands.Commands;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Subsystem controlling the intake motor.
@@ -15,14 +16,19 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class IntakeSubsystem {
 
     private final DcMotor intakeMotor;
+    private final Servo stinger;
 
     // Toggle state tracked internally for teleop commands
     private double intakePower = 0.0;
+    private double stingerDeploy = 0.5;
+    private double stingerRetract = 1.0;
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
         intakeMotor = hardwareMap.get(DcMotor.class, "IntakeMotor");
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        stinger = hardwareMap.get(Servo.class, "Stinger");
     }
 
     // ── Low-level control ────────────────────────────────────────────────
@@ -31,6 +37,13 @@ public class IntakeSubsystem {
     public void setPower(double power) {
         intakePower = power;
         intakeMotor.setPower(intakePower);
+    }
+
+    public void deplyStinger() {
+        stinger.setPosition(stingerDeploy);
+    }
+    public void retractStinger(){
+        stinger.setPosition(stingerRetract);
     }
 
     /** Stop the intake motor. */
@@ -54,6 +67,19 @@ public class IntakeSubsystem {
                 //.setEnd(endCondition -> stop())
                 .setDone(() -> true)
                 .requiring(intakeMotor);
+    }
+
+    public Command stingerOut(){
+        return new CommandBuilder()
+                .setStart(() -> stinger.setPosition(stingerDeploy))
+                .setDone(() -> true)
+                .requiring(stinger);
+    }
+    public Command stingerRetract(){
+        return new CommandBuilder()
+                .setStart(() -> stinger.setPosition(0))
+                .setDone(() -> true)
+                .requiring(stinger);
     }
 
     /**
@@ -84,7 +110,8 @@ public class IntakeSubsystem {
      * @return a continuous command suitable for scheduling during teleop
      */
     public Command teleopToggle(java.util.function.BooleanSupplier aSupplier,
-                                java.util.function.BooleanSupplier bSupplier) {
+                                java.util.function.BooleanSupplier bSupplier,
+                                java.util.function.BooleanSupplier triggerSupplier) {
         return new CommandBuilder()
                 .setStart(() -> {
                     intakePower = 0.0;
@@ -97,11 +124,18 @@ public class IntakeSubsystem {
                     public void run() {
                         boolean a = aSupplier.getAsBoolean();
                         boolean b = bSupplier.getAsBoolean();
+                        boolean trigger = triggerSupplier.getAsBoolean();
 
                         if (a && !prevA) {
                             intakePower = (intakePower > 0.0) ? 0.0 : 1.0;
                         } else if (b && !prevB) {
                             intakePower = (intakePower < 0.0) ? 0.0 : -1.0;
+                        }
+
+                        if(trigger){
+                            stinger.setPosition(stingerDeploy);
+                        } else{
+                            stinger.setPosition(stingerRetract);
                         }
 
                         prevA = a;

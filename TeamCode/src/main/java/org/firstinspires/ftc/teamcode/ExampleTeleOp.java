@@ -72,7 +72,10 @@
             // Schedule continuous TeleOp commands with Ivy
             schedule(
                     runDrive(),
-                    intake.teleopToggle(() -> gamepad2.a, () -> gamepad2.b),
+                    intake.teleopToggle(
+                            () -> gamepad2.a,
+                            () -> gamepad2.b,
+                            () -> gamepad1.right_bumper),
                     launcher.teleopDpadControl(
                             () -> gamepad2.x,
                             () -> gamepad2.y,
