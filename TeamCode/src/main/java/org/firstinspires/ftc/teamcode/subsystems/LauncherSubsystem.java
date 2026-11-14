@@ -22,6 +22,8 @@ public class LauncherSubsystem {
 
     /** Default RPM when first starting the launcher. */
     public static final double START_RPM = 1350; //1450
+    public static final double POLLEN_RPM = 1400;
+    public static final double NECTAR_RPM = 1000;
 
     /** RPM adjustment step per button press. */
     public static final double RPM_STEP = 50.0;
@@ -122,25 +124,32 @@ public class LauncherSubsystem {
      * Teleop command for D-pad RPM control.
      *
      * <ul>
-     *   <li>D-Pad Up:    start at 1450 RPM when stopped; +50 RPM when running</li>
-     *   <li>D-Pad Down:  −50 RPM</li>
+     *   <li>Y button:    + 50 RPM</li>
+     *   <li>X button:    - 50 RPM</li>
+     *   <li>D-Pad Up:    start at 1400 RPM (for pollen)</li>
+     *   <li>D-Pad Down:  start at 1000 RPM (for Nectar)</li>
      *   <li>D-Pad Left:  reset to 1450 RPM</li>
      *   <li>D-Pad Right: stop (0 RPM)</li>
      * </ul>
-     *
+     * @param ySupplier     D-pad y button state
+     * @param xSupplier     D-bad x button state
      * @param upSupplier    D-pad up button state
      * @param downSupplier  D-pad down button state
      * @param leftSupplier  D-pad left button state
      * @param rightSupplier D-pad right button state
      * @return a continuous command suitable for scheduling during teleop
      */
-    public Command teleopDpadControl(java.util.function.BooleanSupplier upSupplier,
+    public Command teleopDpadControl(java.util.function.BooleanSupplier xSupplier,
+                                     java.util.function.BooleanSupplier ySupplier,
+                                     java.util.function.BooleanSupplier upSupplier,
                                      java.util.function.BooleanSupplier downSupplier,
                                      java.util.function.BooleanSupplier leftSupplier,
                                      java.util.function.BooleanSupplier rightSupplier) {
         return new CommandBuilder()
                 .setStart(() -> targetRpm = 0.0)
                 .setExecute(new Runnable() {
+                    private boolean prevX = false;
+                    private boolean prevY = false;
                     private boolean prevUp = false;
                     private boolean prevDown = false;
                     private boolean prevLeft = false;
@@ -148,6 +157,8 @@ public class LauncherSubsystem {
 
                     @Override
                     public void run() {
+                        boolean x = xSupplier.getAsBoolean();
+                        boolean y = ySupplier.getAsBoolean();
                         boolean up = upSupplier.getAsBoolean();
                         boolean down = downSupplier.getAsBoolean();
                         boolean left = leftSupplier.getAsBoolean();
@@ -158,15 +169,17 @@ public class LauncherSubsystem {
                         } else if (left && !prevLeft) {
                             targetRpm = START_RPM;
                         } else if (up && !prevUp) {
-                            if (targetRpm == 0.0) {
-                                targetRpm = START_RPM;
-                            } else {
-                                targetRpm = Math.min(targetRpm + RPM_STEP, MAX_RPM);
-                            }
+                            targetRpm = POLLEN_RPM;
                         } else if (down && !prevDown) {
+                            targetRpm = NECTAR_RPM;
+                        } else if (y && !prevY) {
+                            targetRpm = Math.min(targetRpm + RPM_STEP, MAX_RPM);
+                        } else if (x && !prevX) {
                             targetRpm = Math.max(targetRpm - RPM_STEP, 0.0);
                         }
 
+                        prevX = x;
+                        prevY = y;
                         prevUp = up;
                         prevDown = down;
                         prevLeft = left;

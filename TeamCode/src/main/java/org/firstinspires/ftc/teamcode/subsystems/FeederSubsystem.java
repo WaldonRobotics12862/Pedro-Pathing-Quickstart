@@ -38,6 +38,11 @@ public class FeederSubsystem {
         carWashRight.setPower(1.0);
     }
 
+    public void runCarWashBackwards() {
+        carWashLeft.setPower(1.0);
+        carWashRight.setPower(-1.0);
+    }
+
     /** Stop the car wash fans. */
     public void stopCarWash() {
         carWashLeft.setPower(0.0);
@@ -70,6 +75,11 @@ public class FeederSubsystem {
         stopCarWash();
     }
 
+    public void reverse(){
+        closeGate();
+        runCarWashBackwards();
+    }
+
     // ── Commands ─────────────────────────────────────────────────────────
 
     /**
@@ -96,12 +106,16 @@ public class FeederSubsystem {
      * Teleop command: hold a button to feed, release to stop.
      *
      * @param feedButtonSupplier supplies the current state of the feed button
+     * @param reverseButtonSupplier supplies the current state of the reverse feed button
      * @return a continuous command suitable for scheduling during teleop
      */
-    public Command teleopHoldToFeed(java.util.function.BooleanSupplier feedButtonSupplier) {
+    public Command teleopHoldToFeed(java.util.function.BooleanSupplier feedButtonSupplier,
+                                    java.util.function.BooleanSupplier reverseButtonSupplier) {
         return Commands.infinite(() -> {
             if (feedButtonSupplier.getAsBoolean()) {
                 engage();
+            } else if (reverseButtonSupplier.getAsBoolean()) {
+                reverse();
             } else {
                 disengage();
             }
