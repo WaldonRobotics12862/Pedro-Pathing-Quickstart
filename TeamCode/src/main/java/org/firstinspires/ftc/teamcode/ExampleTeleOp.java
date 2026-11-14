@@ -10,6 +10,7 @@
     import com.pedropathing.follower.ManualDrive;
     import com.pedropathing.ivy.Command;
     import com.pedropathing.ivy.Scheduler;
+    import com.pedropathing.math.Pose;
     import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
     import com.qualcomm.robotcore.eventloop.opmode.OpMode;
     import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -120,7 +121,8 @@
         private Command runDrive() {
             return infinite(() -> {
                 if (gamepad1.a) {
-                    otos.calibrateImu();
+                    Pose currentPose = follower.pose();
+                    follower.setPose(new Pose(currentPose.x(),currentPose.y(),0));
                 }
 
                 DrivePowers powers = ManualDrive.fieldCentric(
