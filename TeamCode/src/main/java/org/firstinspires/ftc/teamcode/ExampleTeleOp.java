@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 
 @TeleOp(name = "Example TeleOp")
@@ -38,6 +38,9 @@ public class ExampleTeleOp extends OpMode {
     //Logger
     private FtcDashboard dashboard;
     private TelemetryPacket packet;
+
+    private DigitalChannel left_eye=null;
+    private DigitalChannel right_eye=null;
 
 
     @Override
@@ -58,6 +61,13 @@ public class ExampleTeleOp extends OpMode {
         feeder = new FeederSubsystem(hardwareMap);
         launcher = new LauncherSubsystem(hardwareMap);
 
+        right_eye = hardwareMap.get(DigitalChannel.class, "right_eye");
+        left_eye = hardwareMap.get(DigitalChannel.class, "left_eye");
+        right_eye.setMode(DigitalChannel.Mode.OUTPUT);
+        left_eye.setMode(DigitalChannel.Mode.OUTPUT);
+        right_eye.setState(false);
+        left_eye.setState(false);
+
         // Schedule continuous TeleOp commands with Ivy
         schedule(
                 runDrive(),
@@ -76,6 +86,9 @@ public class ExampleTeleOp extends OpMode {
     public void loop() {
         packet = new TelemetryPacket();
         Scheduler.execute();
+
+        right_eye.setState(false);
+        left_eye.setState(false);
 
         // Add your custom robot data
         packet.put("Intake/Power", intake.getPower());

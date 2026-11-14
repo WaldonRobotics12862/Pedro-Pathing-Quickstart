@@ -5,6 +5,9 @@
             <ContinuousRotationServo name="Car Wash Left" port="2" />
             <Servo name="Launch Gate" port="4" />
 
+            <DigitalDevice name="left_eye" port="2" />
+            <DigitalDevice name="right_eye" port="0" />
+
             <goBILDA5202SeriesMotor name="Front Left" port="0" />
             <goBILDA5202SeriesMotor name="Back Left" port="1" />
             <goBILDA5202SeriesMotor name="IntakeMotor" port="3" />
