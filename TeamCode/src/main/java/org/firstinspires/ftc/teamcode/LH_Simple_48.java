@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.subsystems.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LauncherSubsystem;
 
-@Autonomous(name = "LH_Simple_48", group = "Autonomous")
+@Autonomous(name = "LH_Simple_48", group = "Autonomous", preselectTeleOp = "ExampleTeleOp")
 public class LH_Simple_48 extends LinearOpMode {
 
     private Follower follower;
