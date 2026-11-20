@@ -34,10 +34,10 @@ public class RH_Simple_28 extends LinearOpMode {
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(56.6, 9, 90);
-    private final Pose path1 = poseFactory.of(56.6, 24, 90);
-    private final Pose point2Start = poseFactory.of(56.6, 24, 90);
-    private final Pose point2 = poseFactory.of(20, 92, 90);
-    private final Pose point2Control1 = poseFactory.of(21.1337, 40.7019, 0);
+    private final Pose point1 = poseFactory.of(56.6, 20, 90);
+    private final Pose point2Start = poseFactory.of(56.6, 20, 90);
+    private final Pose point2 = poseFactory.of(14, 92, 90);
+    private final Pose point2Control1 = poseFactory.of(15.1337, 40.7019, 0);
 
     // Autonomous routine
     public Command autoRoutine() {
@@ -47,20 +47,21 @@ public class RH_Simple_28 extends LinearOpMode {
         launcher = new LauncherSubsystem(hardwareMap);
 
         return parallel(
-                launcher.runAtRpm(1200),
+                launcher.runAtRpm(1400),
                 sequential(
                         follow(follower, path1()),
-                        waitMs(500),
+                        waitMs(1000),
                         parallel(
                                 feeder.feedCommand(),
                                 intake.runForward()
                         ),
-                        waitMs(2000),
+                        waitMs(4000),
                         parallel(
                                 intake.stopCommand(),
                                 feeder.stopCommand()
                         ),
-                        follow(follower, path2())
+                        follow(follower, path2()),
+                        launcher.stopCommand()
                 )
         );
     }
@@ -93,7 +94,7 @@ public class RH_Simple_28 extends LinearOpMode {
     }
 
     public Path path1() {
-        return Paths.line(start, path1).linear(start, path1);
+        return Paths.line(start, point1).linear(start, point1);
     }
 
     public Path path2() {

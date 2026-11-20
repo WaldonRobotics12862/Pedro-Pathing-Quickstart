@@ -33,11 +33,11 @@ public class LH_Simple_48 extends LinearOpMode {
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(61, 130, -90);
-    private final Pose path1 = poseFactory.of(61, 80.3286, -90);
-    private final Pose point2 = poseFactory.of(61, 120, -89.352);
-    private final Pose point3Start = poseFactory.of(61, 120, -90);
-    private final Pose point3 = poseFactory.of(19.0026, 110.8318, 180);
-    private final Pose point3Control1 = poseFactory.of(43.0023, 108.8855, 0);
+    private final Pose path1 = poseFactory.of(61, 70.3286, -90);
+    private final Pose point2 = poseFactory.of(61, 119, -89.352);
+    private final Pose point3Start = poseFactory.of(61, 119, -90);
+    private final Pose point3 = poseFactory.of(18.0026, 120.8318, 180);
+    private final Pose point3Control1 = poseFactory.of(42.0023, 118.8855, 0);
 
     // Autonomous routine
     public Command autoRoutine() {
@@ -47,19 +47,21 @@ public class LH_Simple_48 extends LinearOpMode {
         launcher = new LauncherSubsystem(hardwareMap);
 
         return parallel(
-                launcher.runAtRpm(1200),
+                launcher.runAtRpm(1400),
                 sequential(
                         follow(follower, path1()),
-                        waitMs(20000),
+                        waitMs(18000),
+//                        waitMs(5000),
                         follow(follower, path2()),
                         parallel(
                                 feeder.feedCommand(),
                                 intake.runForward()
                         ),
-                        waitMs(2000),
+                        waitMs(5000),
                         parallel(
                                 intake.stopCommand(),
-                                feeder.stopCommand()
+                                feeder.stopCommand(),
+                                launcher.stopCommand()
                         ),
                         follow(follower, path3())
                 )
