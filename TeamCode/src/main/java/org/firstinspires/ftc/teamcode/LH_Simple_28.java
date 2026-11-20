@@ -34,8 +34,10 @@ public class LH_Simple_28 extends LinearOpMode {
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(62, 132, -90);
-    private final Pose path1 = poseFactory.of(20, 121, 173.4124);
-    private final Pose path1Control1 = poseFactory.of(46.0525, 117.2984, 0);
+
+    private final Pose point1 = poseFactory.of(61, 119, -89.352);
+    private final Pose point2 = poseFactory.of(20, 121, 173.4124);
+    private final Pose point2Control = poseFactory.of(46.0525, 117.2984, 0);
 
     // Autonomous routine
     public Command autoRoutine() {
@@ -45,19 +47,20 @@ public class LH_Simple_28 extends LinearOpMode {
         launcher = new LauncherSubsystem(hardwareMap);
 
         return parallel(
-                launcher.runAtRpm(1200),
+                launcher.runAtRpm(1400),
                 sequential(
-                        waitMs(500),
+                        follow(follower, path1()),
+                        waitMs(10000),
                         parallel(
                                 feeder.feedCommand(),
                                 intake.runForward()
                         ),
-                        waitMs(2000),
+                        waitMs(5000),
                         parallel(
                                 intake.stopCommand(),
                                 feeder.stopCommand()
                         ),
-                        follow(follower, path1())
+                        follow(follower, path2())
                 )
         );
     }
@@ -90,6 +93,9 @@ public class LH_Simple_28 extends LinearOpMode {
     }
 
     public Path path1() {
-        return Paths.curve(start, path1Control1, path1).tangent();
+        return Paths.line(start, point1).linear(start, point1);
+    }
+    public Path path2() {
+        return Paths.curve(point1, point2Control, point2).tangent();
     }
 }
